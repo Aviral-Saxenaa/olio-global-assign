@@ -77,5 +77,4 @@ Demo login after seeding:
 
 - The default `console` provider makes the app runnable without external email credentials; switching to Brevo enables real sends and open/delivery webhook events.
 - Audience filters currently support a compact rule model rather than a full visual builder.
-- File attachments are not implemented.
-- Deployment URL, GitHub remote publishing, and Loom recording still need to be completed from a real account environment.
+- The frontend, API, PostgreSQL, and Redis can be deployed independently. The BullMQ worker is designed to run as a separate background service. Due to free-tier hosting limitations for background workers, the worker should be run locally (`npm run dev:worker`) or deployed to a platform that supports long-running background processes. Without the worker, campaign jobs will remain queued and email delivery processing will not occur.
