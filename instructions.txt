@@ -1,0 +1,40 @@
+
+The gist
+You're building a small email marketing app, basically a cut-down Mailchimp. A company signs up, brings in their list of contacts, groups those contacts, and sends email campaigns to them. After a campaign goes out they can see how it did (how many landed, how many got opened).
+
+It's deliberately close to what we actually work on, so treat it like a real product feature and not a throwaway demo. What we're really trying to learn from this is how you lay out a codebase, how you think about your data, and how you deal with the fiddly bits: messy contact imports, provider webhooks, and running things on a schedule.
+
+Stack we want
+Next.js on the front, Express for the API, Postgres for storage, and Redis (with BullMQ or something similar) for the scheduling. Please keep the frontend and backend properly separated rather than cramming everything into Next's API routes. If you set it up as a monorepo, even better, though that's not required.
+
+What it needs to do
+Auth and workspaces. Normal sign up / log in. Each account is walled off from the others, so someone logged into account A can't see account B's contacts, audiences or campaigns. Do this on the server. We will try to reach across accounts to see if we can.
+
+Contacts. The usual CRUD. Beyond name, email and phone, let people add their own custom fields rather than locking them to a fixed schema. There's a CSV importer too. Use the sample file in mock-data/contacts.csv to test it. Fair warning, that file has some duplicate emails and phone numbers in it on purpose. Handle those. Whether you skip them or merge them is up to you, but don't silently pile up copies, and tell the user what happened after an import ("15 added, 3 skipped as duplicates", that kind of thing). The same duplicate check should apply when someone adds a contact by hand.
+
+Audiences. A user should be able to save a named group of contacts by filtering the ones they already have (by a tag, by city, by whatever fields exist). Show how many people each audience contains. These are what they'll pick from when they send a campaign.
+
+Campaigns. This is the heart of it. A campaign is a name plus the email itself (subject and body). For choosing who gets it, give them two options. One is picking an audience or a tag. The other is a box where they paste in a bunch of emails or phone numbers, and for each one you look it up against their saved contacts and show the name next to it, so they can sanity check who they're about to email. Anything you can't match, flag it.
+
+They can either send right away or pick a date and time to send later. The scheduled ones are the part we care about most here, so run them through the Redis queue and make sure they actually fire at the right time and would survive the server restarting. A setTimeout or one big interval looping over the table isn't what we're after.
+
+For the actual sending, pick any email provider that gives you open tracking and webhooks for free. A few that work without you needing to own a domain: Mailgun (free sandbox domain, no DNS to set up, sends to about five verified addresses which is plenty here), Brevo (verify a single sender email, decent daily limit), or MailerSend. Use whatever you like as long as you can catch "opened" events over a webhook.
+
+Analytics. Each campaign gets a little performance page: how many were sent, delivered, opened. You feed the opened/delivered counts from the provider's webhooks. The page should refresh those numbers on its own every few seconds (polling is fine) so you can watch them tick up without hitting reload. Do keep in mind open tracking is never exact since some mail clients block the tracking pixel, so we won't hold the usual gaps against you.
+
+Deploying it. Put it somewhere we can actually log in and click around: Vercel, Railway, Render, whatever's easiest. Free tiers are fine. It has to genuinely run in production, not just on your machine.
+
+If you have time left over
+A couple of things that'd earn extra credit once the above is solid, but skip them if you're tight: a button to duplicate an existing campaign (copy its content and recipients into a fresh draft to tweak and resend), and support for attaching a file like a PDF to the outgoing email.
+
+Sending it back to us
+Send over the live URL and a link to the GitHub repo. Commit as you go so we can see how you worked rather than one giant final commit, and please don't check in your .env or any keys. Add a short README covering how to run it locally, what environment variables it expects, and a line or two on anything you decided or traded off along the way.
+
+Last thing, and this one isn't optional: record a short Loom (or similar) with your voice walking us through the app end to end. That's how we'll actually follow what you built. Walking us through the code as well is a nice bonus but the working demo is the must.
+
+What we're looking at
+Mostly the structure and the judgement: is the codebase laid out sensibly, is the data model reasonable, is the account isolation actually airtight, does the campaign flow hang together, is the scheduling done as real queued jobs, and does the analytics really update on its own. Clean and working and live beats a long feature list every time.
+
+The stuff that'll stand out the wrong way: account checks done only in the UI, duplicate contacts slipping through, scheduling faked instead of queued, analytics that never move, secrets committed to the repo, or it not being deployed at all.
+
+And if you don't get to something, just say so in the README and tell us how you'd have done it. That's a fine answer.

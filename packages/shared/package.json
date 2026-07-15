@@ -1,0 +1,11 @@
+{
+  "name": "@olio/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "dayjs": "^1.11.21",
+    "zod": "^4.4.3"
+  }
+}

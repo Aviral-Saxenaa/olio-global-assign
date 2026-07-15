@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+**/dist/
+.turbo/
+**/.turbo/
+out/
+**/out/
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# Next.js
+.next/
+**/.next/
+next-env.d.ts
+**/next-env.d.ts
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local databases / data
+postgres-data/
+**/postgres-data/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Coverage / test artifacts
+coverage/
+**/coverage/
+.nyc_output/
+
+# Cache / generated files
+.cache/
+**/.cache/
+*.pem
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Deployment
+.vercel
+.netlify
+
+# Misc
+.tmp/
+**/.tmp/

@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+:root {
+  --page: #f4f3ef;
+  --soft: #ecebe5;
+  --surface: #ffffff;
+  --panel: #ffffff;
+  --hero-card: #ffffff;
+  --ink: #4a4b4d;
+  --ink-strong: #1b1c1e;
+  --muted: #8d8d87;
+  --line: #e7e5df;
+  --line-strong: #d6d4cc;
+  --accent: #b9563b;
+  --accent-hover: #a64a30;
+  --accent-soft: #f6ebe6;
+  --accent-ink: #8f3f29;
+  --sage: #5f7d6b;
+  --sage-soft: #e9efea;
+  --danger: #b4452f;
+  --hero-ink: #fbf7f0;
+  --hero-muted: rgba(251, 247, 240, 0.7);
+}
+
+@theme inline {
+  --color-background: var(--surface);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-heading);
+  --font-serif: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--page);
+}
+
+body {
+  color: var(--ink-strong);
+  font-family: var(--font-body), serif;
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-heading), sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+.dashboard-shell {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(27, 28, 30, 0.04);
+}
+
+.panel-subtle {
+  border: 1px solid var(--line);
+  background: #fcfbf8;
+  border-radius: 18px;
+  padding: 1.25rem;
+}
+
+.button-primary,
+.button-secondary,
+.button-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0.8rem 1.25rem;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.button-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(185, 86, 59, 0.25);
+}
+
+.button-primary:hover {
+  background: var(--accent-hover);
+}
+
+.button-secondary {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink-strong);
+}
+
+.button-secondary:hover {
+  border-color: var(--ink-strong);
+}
+
+.button-dark {
+  background: var(--ink-strong);
+  color: var(--surface);
+}
+
+.segmented-control,
+.mode-switch {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 0.25rem;
+  border-radius: 12px;
+  background: var(--soft);
+  padding: 0.25rem;
+  border: 1px solid var(--line);
+}
+
+.segmented-control button,
+.mode-switch button {
+  border-radius: 9px;
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.segmented-control .is-active,
+.mode-switch .is-active {
+  background: var(--surface);
+  color: var(--ink-strong);
+  box-shadow: 0 1px 2px rgba(27, 28, 30, 0.08);
+}
+
+.field-wrap {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink-strong);
+}
+
+.field-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  padding: 0.85rem 0.95rem;
+  color: var(--ink-strong);
+}
+
+.field-input::placeholder {
+  color: rgba(74, 75, 77, 0.5);
+}
+
+.field-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.upload-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.upload-field:hover {
+  border-color: var(--accent);
+}
+
+.upload-field input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.stat-chip {
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.stat-blue {
+  background: #eef2f4;
+  border-color: #dde6ea;
+  color: #2c3a42;
+}
+
+.stat-sand {
+  background: #f3ede4;
+  border-color: #e7ddcf;
+  color: #4a3c2e;
+}
+
+.stat-ink {
+  background: #eceae6;
+  border-color: #dedcd6;
+  color: #2c2d30;
+}
+
+.contact-row,
+.audience-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 0.95rem 1.05rem;
+}
+
+.avatar-badge {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 600;
+}
+
+.tag-pill,
+.count-badge,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tag-pill,
+.count-badge {
+  background: var(--sage-soft);
+  color: var(--sage);
+}
+
+.status-pill {
+  background: var(--soft);
+  color: var(--muted);
+}
+
+.campaign-row {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 1rem;
+  color: var(--ink-strong);
+  cursor: pointer;
+}
+
+.campaign-row:hover {
+  border-color: var(--line-strong);
+}
+
+.campaign-row.is-selected {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--ink-strong);
+}
+
+.campaign-row .status-pill {
+  background: rgba(27, 28, 30, 0.05);
+  color: var(--muted);
+}
+
+.lookup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+}
+
+.lookup-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.lookup-match {
+  color: var(--sage);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.lookup-miss {
+  color: var(--danger);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.example-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border: 1px solid #ecd9d1;
+}
