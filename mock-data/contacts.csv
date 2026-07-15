@@ -1,0 +1,6 @@
+email,phone,firstName,lastName,city,tags,company,plan
+ada@example.com,+15550000001,Ada,Lovelace,London,"vip|engineering",Analytical Engines,enterprise
+grace@example.com,+15550000002,Grace,Hopper,New York,newsletter,US Navy,pro
+ada@example.com,+15550000001,Ada,Lovelace,London,"vip|engineering",Analytical Engines,enterprise
+linus@example.com,+15550000003,Linus,Torvalds,Helsinki,"newsletter|oss",Linux Foundation,starter
+noemail@example.com,,No,Email,Berlin,imported,Example Co,basic
