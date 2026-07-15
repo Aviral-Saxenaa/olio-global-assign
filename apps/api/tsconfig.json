@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "ignoreDeprecations": "5.0"
+  },
+  "include": [
+    "src"
+  ]
+}
