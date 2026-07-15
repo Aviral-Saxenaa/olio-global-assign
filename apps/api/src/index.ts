@@ -191,6 +191,19 @@ app.post("/contacts", requireAuth, async (req, res) => {
   res.status(201).json(contact);
 });
 
+app.delete("/contacts/:id", requireAuth, async (req, res) => {
+  const auth = (req as AuthedRequest).auth;
+  const contact = await Contact.findOne({
+    where: { id: String(req.params.id), workspaceId: auth.workspaceId },
+  });
+  if (!contact) {
+    return res.status(404).json({ error: "Contact not found" });
+  }
+  await CampaignDelivery.destroy({ where: { contactId: contact.id } });
+  await contact.destroy();
+  res.json({ ok: true });
+});
+
 app.post("/contacts/import", requireAuth, upload.single("file"), async (req, res) => {
   const auth = (req as AuthedRequest).auth;
   if (!req.file) {
@@ -294,6 +307,22 @@ app.post("/audiences", requireAuth, async (req, res) => {
   });
 
   res.status(201).json(audience);
+});
+
+app.delete("/audiences/:id", requireAuth, async (req, res) => {
+  const auth = (req as AuthedRequest).auth;
+  const audience = await Audience.findOne({
+    where: { id: String(req.params.id), workspaceId: auth.workspaceId },
+  });
+  if (!audience) {
+    return res.status(404).json({ error: "Audience not found" });
+  }
+  await Campaign.update(
+    { audienceId: null },
+    { where: { audienceId: audience.id, workspaceId: auth.workspaceId } },
+  );
+  await audience.destroy();
+  res.json({ ok: true });
 });
 
 app.get("/contacts/lookup", requireAuth, async (req, res) => {
@@ -456,6 +485,20 @@ app.get("/campaigns/:id/analytics", requireAuth, async (req, res) => {
 
 app.post("/debug/campaigns/:id/send", async (req, res) => {
   await processCampaignSend(req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/campaigns/:id", requireAuth, async (req, res) => {
+  const auth = (req as AuthedRequest).auth;
+  const campaign = await Campaign.findOne({
+    where: { id: String(req.params.id), workspaceId: auth.workspaceId },
+  });
+  if (!campaign) {
+    return res.status(404).json({ error: "Campaign not found" });
+  }
+  await CampaignDelivery.destroy({ where: { campaignId: campaign.id } });
+  await WebhookEvent.destroy({ where: { campaignId: campaign.id } });
+  await campaign.destroy();
   res.json({ ok: true });
 });
 

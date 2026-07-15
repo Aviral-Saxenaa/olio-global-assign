@@ -97,9 +97,22 @@ export function DashboardApp() {
       setDraft(clone);
       setSelectedCampaignId(clone.id);
       await mutateCampaigns();
-      setMessage(`Duplicated as "${clone.name}". Tweak the copy in the builder, then send.`);
+    setMessage(`Duplicated as "${clone.name}". Tweak the copy in the builder, then send.`);
+  } catch (error) {
+    setMessage(error instanceof Error ? error.message : "Could not duplicate campaign");
+  }
+};
+
+  const handleDeleteCampaign = async (campaignId: string) => {
+    try {
+      await api(`/campaigns/${campaignId}`, { method: "DELETE" });
+      if (selectedCampaignId === campaignId) {
+        setSelectedCampaignId("");
+      }
+      await mutateCampaigns();
+      setMessage("Campaign deleted.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not duplicate campaign");
+      setMessage(error instanceof Error ? error.message : "Could not delete campaign");
     }
   };
 
@@ -295,6 +308,7 @@ export function DashboardApp() {
               selectedCampaignId={selectedCampaignId}
               onSelectCampaign={setSelectedCampaignId}
               onDuplicate={handleDuplicate}
+              onDeleteCampaign={handleDeleteCampaign}
               analytics={analytics}
             />
           </Card>
@@ -448,6 +462,16 @@ function ContactManager({
   const [file, setFile] = useState<File | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
+  const deleteContact = async (id: string) => {
+    try {
+      await api(`/contacts/${id}`, { method: "DELETE" });
+      setFeedback("Contact deleted.");
+      await onCreated();
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "Could not delete contact");
+    }
+  };
+
   return (
     <div className="grid gap-5">
       {feedback ? <BannerMessage message={feedback} /> : null}
@@ -546,21 +570,30 @@ function ContactManager({
       <div className="grid gap-3 md:grid-cols-2">
         {contacts.slice(0, 8).map((contact) => (
           <article key={contact.id} className="contact-row">
-            <div className="flex items-start gap-4">
-              <div className="avatar-badge">
-                {((contact.firstName || contact.email || "?").slice(0, 1)).toUpperCase()}
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="avatar-badge">
+                  {((contact.firstName || contact.email || "?").slice(0, 1)).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate font-sans text-base font-semibold tracking-[-0.03em] text-[var(--ink-strong)]">
+                    {[contact.firstName, contact.lastName].filter(Boolean).join(" ") || "Unnamed contact"}
+                  </p>
+                  <p className="truncate text-sm text-[var(--muted)]">
+                    {contact.email || contact.phone || "No primary address"}
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
+                    {contact.city || "No city"}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="truncate font-sans text-base font-semibold tracking-[-0.03em] text-[var(--ink-strong)]">
-                  {[contact.firstName, contact.lastName].filter(Boolean).join(" ") || "Unnamed contact"}
-                </p>
-                <p className="truncate text-sm text-[var(--muted)]">
-                  {contact.email || contact.phone || "No primary address"}
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
-                  {contact.city || "No city"}
-                </p>
-              </div>
+              <button
+                type="button"
+                className="button-ghost px-3 py-1 text-sm"
+                onClick={() => deleteContact(contact.id)}
+              >
+                Delete
+              </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {contact.tags.length ? (
@@ -593,6 +626,16 @@ function AudienceManager({
   const [field, setField] = useState("city");
   const [operator, setOperator] = useState("contains");
   const [value, setValue] = useState("");
+
+  const deleteAudience = async (id: string) => {
+    try {
+      await api(`/audiences/${id}`, { method: "DELETE" });
+      onMessage("Audience deleted.");
+      await onCreated();
+    } catch (error) {
+      onMessage(error instanceof Error ? error.message : "Could not delete audience");
+    }
+  };
 
   return (
     <div className="grid gap-5">
@@ -628,18 +671,29 @@ function AudienceManager({
         {audiences.length ? (
           audiences.map((audience) => (
             <article key={audience.id} className="audience-row">
-              <div>
-                <p className="font-sans text-lg font-semibold tracking-[-0.03em] text-[var(--ink-strong)]">
-                  {audience.name}
-                </p>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  {audience.filters[0]?.field} {audience.filters[0]?.operator}{" "}
-                  {Array.isArray(audience.filters[0]?.value)
-                    ? audience.filters[0]?.value.join(", ")
-                    : audience.filters[0]?.value}
-                </p>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-sans text-lg font-semibold tracking-[-0.03em] text-[var(--ink-strong)]">
+                    {audience.name}
+                  </p>
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    {audience.filters[0]?.field} {audience.filters[0]?.operator}{" "}
+                    {Array.isArray(audience.filters[0]?.value)
+                      ? audience.filters[0]?.value.join(", ")
+                      : audience.filters[0]?.value}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="count-badge">{audience.count} contacts</span>
+                  <button
+                    type="button"
+                    className="button-ghost px-3 py-1 text-sm"
+                    onClick={() => deleteAudience(audience.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div className="count-badge">{audience.count} contacts</div>
             </article>
           ))
         ) : (
@@ -914,12 +968,14 @@ function AnalyticsPanel({
   selectedCampaignId,
   onSelectCampaign,
   onDuplicate,
+  onDeleteCampaign,
   analytics,
 }: {
   campaigns: Campaign[];
   selectedCampaignId: string;
   onSelectCampaign: (value: string) => void;
   onDuplicate: (id: string) => void;
+  onDeleteCampaign: (id: string) => void;
   analytics?: Analytics;
 }) {
   return (
@@ -949,6 +1005,16 @@ function AnalyticsPanel({
                     }}
                   >
                     Duplicate
+                  </button>
+                  <button
+                    type="button"
+                    className="button-ghost px-3 py-1 text-sm"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDeleteCampaign(campaign.id);
+                    }}
+                  >
+                    Delete
                   </button>
                   <span className="status-pill">{campaign.status}</span>
                 </div>
