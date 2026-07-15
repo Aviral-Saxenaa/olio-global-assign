@@ -569,9 +569,9 @@ function ContactManager({
 
       <div className="grid gap-3 md:grid-cols-2">
         {contacts.slice(0, 8).map((contact) => (
-          <article key={contact.id} className="contact-row">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
+          <article key={contact.id} className="contact-row flex-col gap-3">
+            <div className="flex w-full items-start justify-between gap-4">
+              <div className="flex min-w-0 flex-1 items-start gap-4">
                 <div className="avatar-badge">
                   {((contact.firstName || contact.email || "?").slice(0, 1)).toUpperCase()}
                 </div>
@@ -595,7 +595,7 @@ function ContactManager({
                 Delete
               </button>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex w-full flex-wrap gap-2">
               {contact.tags.length ? (
                 contact.tags.map((tag) => (
                   <span key={tag} className="tag-pill">
@@ -670,12 +670,12 @@ function AudienceManager({
       <div className="grid gap-3">
         {audiences.length ? (
           audiences.map((audience) => (
-            <article key={audience.id} className="audience-row">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-sans text-lg font-semibold tracking-[-0.03em] text-[var(--ink-strong)]">
-                    {audience.name}
-                  </p>
+              <article key={audience.id} className="audience-row flex-col gap-3">
+                <div className="flex w-full items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="truncate font-sans text-base font-semibold tracking-[-0.03em] text-[var(--ink-strong)]">
+                      {audience.name}
+                    </p>
                   <p className="mt-1 text-sm text-[var(--muted)]">
                     {audience.filters[0]?.field} {audience.filters[0]?.operator}{" "}
                     {Array.isArray(audience.filters[0]?.value)
