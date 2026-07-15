@@ -1,0 +1,90 @@
+# Render Blueprint — defines all services for this monorepo.
+# Deploy: push this repo to GitHub, then in Render click "New" > "Blueprint"
+# and select the repository. Adjust the *.onrender.com domains below if your
+# service names differ.
+
+databases:
+  - name: olio-postgres
+    databaseName: olio
+    user: olio
+    plan: free
+    postgresMajorVersion: 16
+  - name: olio-redis
+    plan: free
+    redisMajorVersion: 7
+
+services:
+  - type: web
+    name: olio-api
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm run start -w @olio/api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: olio-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: olio-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: APP_URL
+        value: https://olio-web.onrender.com
+      - key: API_URL
+        value: https://olio-api.onrender.com
+      - key: EMAIL_PROVIDER
+        value: console
+      - key: EMAIL_FROM
+        value: Olio <hello@olio.app>
+
+  - type: worker
+    name: olio-worker
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm run start -w @olio/worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: olio-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: olio-redis
+          property: connectionString
+      - key: JWT_SECRET
+        sync: true
+      - key: APP_URL
+        value: https://olio-web.onrender.com
+      - key: API_URL
+        value: https://olio-api.onrender.com
+      - key: EMAIL_PROVIDER
+        value: console
+      - key: EMAIL_FROM
+        value: Olio <hello@olio.app>
+
+  - type: web
+    name: olio-web
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm run build -w @olio/web
+    startCommand: npm run start -w @olio/web
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://olio-api.onrender.com
